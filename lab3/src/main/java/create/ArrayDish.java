@@ -12,11 +12,11 @@ public class ArrayDish {
         Dish[] array = new Dish[n];
         try {
             for (int i = 0; i < n; i++) {
-                //вводим название блюда
+
                 System.out.println("Enter the dish name:");
                 InfoReader reader = new InfoReader();
                 String str = reader.readString(System.in);
-                //вводим цену блюда
+
                 System.out.println("Enter the price of the dish:");
                 InfoReader priceReader = new InfoReader();
                 StringFilter filter = new StringFilter();
@@ -26,7 +26,7 @@ public class ArrayDish {
                 }while (!filter.filterInt(value));
                 int price = Integer.parseInt(value);
                 array[i] = new Dish(str, price);
-                //вводим количество клиентов, купивших блюдо
+
                 System.out.println("Enter the number of clients:");
                 InfoReader numberOfClinetsReader = new InfoReader();
                 StringFilter filt = new StringFilter();

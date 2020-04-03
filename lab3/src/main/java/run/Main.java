@@ -6,9 +6,7 @@ import entity.Dish;
 import filter.StringFilter;
 import reader.InfoReader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,55 +25,92 @@ public class Main {
             Dish[] array= new Dish[n];
             array = ArrayDish.createArrayDish(n);
 
-            Stream<Dish> dishes1 = Arrays.stream(array);
-            System.out.println("\n" + "Menu:");
-            dishes1
-                    .map(d->   "Name of the dish: " + d.getDishName() + "\n"+ "Price: " + d.getDishPrice()+"\n")
-                    .forEach(System.out::println);
-            Stream<Dish> dishes2 = Arrays.stream(array);
+
             System.out.println("\n"+"Dishes that costs more than 10: ");
-            dishes2
-                    .filter(d->d.getDishPrice()>10)
-                    .peek(d -> System.out.println("Filtered dish: " + d.getDishName()))
-                    .forEach(d->System.out.println(d.getDishName()));//есть ли блюда дороже 10
+            findDish(array);
 
-            ArrayList<Dish> dishArray = new ArrayList<Dish>(Arrays.asList(array));
-            Dish min = dishArray.stream().min(Dish::compare).get();
-            Dish max = dishArray.stream().max(Dish::compare).get();
-            System.out.printf("MIN Name: %s Price: %d \n", min.getDishName(), min.getDishPrice());//min и max цены
-            System.out.printf("MAX Name: %s Price: %d \n", max.getDishName(), max.getDishPrice());
 
-            Stream<Dish> dishes3 = Arrays.stream(array);
             System.out.println("\n"+"Dishes that have only one client: ");
-            dishes3
-                    .filter(d->d.getClientArrayList().size()==1)//только один клиент
-                    .peek(d -> System.out.println("Filtered dish: " + d.getDishName()))
-                    .forEach(d->System.out.println(d.getDishName()));
+            filterDishWishOneClient(array);
 
-            Stream<Dish> dishes4 = Arrays.stream(array);
-            System.out.println("\n"+"Sorting dishes according to their popularity: ");//по возрастанию
-            dishes4
-                    .sorted(Comparator.comparingInt(Dish::getListSize))
-                    .forEach(d->System.out.println(d.getDishName()));
+            System.out.println("\n"+"Dish with minimal price: "+"\n"+ getMinPrice(array));
+            System.out.println("\n"+"Dish with maximal price: "+"\n"+ getMaxPrice(array));
+
+            System.out.println("\n"+"Sorting dishes according to their popularity: ");
+            sortDish(array);
 
             System.out.println("\n"+"Getting the List of Clients: ");
-            ArrayList<Dish> dishes6 = new ArrayList<Dish>(Arrays.asList(array));
-            ArrayList<Client> clients = new ArrayList<>();
-            dishes6.forEach(d -> clients.addAll(d.getClientArrayList()));
-            clients.forEach(c->System.out.println(c.getClientName()+" "+c.getClientLocation()));
+            getClientsList(array);
 
-            /*System.out.println("\n"+"Getting the List of Clients without Duplicates: ");
-            ArrayList<Client> startClients = new ArrayList<>();
-            dishes6.forEach(d -> startClients.addAll(d.getClientArrayList()));
-            ArrayList<Client> clientsWithNoDuplicate =
-                    startClients.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
-            clientsWithNoDuplicate.forEach(c->System.out.println(c.getClientName()+" "+c.getClientLocation()));
-             */
+            System.out.println("\n"+"Getting the List of Clients without duplicates: ");
+            getClientsWithoutDuplicates(array);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
+    public static void findDish(Dish[] array){
+        Stream<Dish> dishes = Arrays.stream(array);
+        dishes
+                .filter(d->d.getDishPrice()>10)
+                .peek(d -> System.out.println("Filtered dish: " + d.getDishName()))
+                .forEach(d->System.out.println(d.getDishName()));
+    }
+    public static void filterDishWishOneClient(Dish[] array){
+        Stream<Dish> dishes3 = Arrays.stream(array);
+        dishes3
+                .parallel()
+                .filter(d->d.getClientArrayList().size()==1)
+                .peek(d -> System.out.println("Filtered dish: " + d.getDishName()))
+                .forEach(d->System.out.println(d.getDishName()));
+    }
 
+    public static String getMinPrice(Dish[] array)  {
+        Stream<Dish> dishStream= Arrays.stream(array);
+        Optional<Dish> min = dishStream
+                .min(Dish::compare);
+        try{
+            Dish result = min.orElseThrow(() -> new Exception("There is no dish. "));
+            return "Name of the Dish: " + result.getDishName()+"  MIN price: "+ result.getDishPrice();
+        }
+        catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
+    public static String getMaxPrice(Dish[] array)  {
+        Stream<Dish> dishStream= Arrays.stream(array);
+        Optional<Dish> max = dishStream
+                .max(Dish::compare);
+        try{
+            Dish result = max.orElseThrow(() -> new Exception("There is no dish. "));
+            return "Name of the Dish: " + result.getDishName()+"  MAX price: "+ result.getDishPrice();
+        }
+        catch (Exception e){
+            return e.getMessage();
+        }
+    }
+    public static void sortDish(Dish[] array){
+        Stream<Dish> dishes = Arrays.stream(array);
+        dishes
+                .sorted(Comparator.comparingInt(Dish::getListSize))
+                .forEach(d->System.out.println("Dish name: "+ d.getDishName()+", "+"Number of clients: "+d.getListSize()));
+    }
+    public static void getClientsList(Dish[] array){
+        ArrayList<Dish> dishes = new ArrayList<Dish>(Arrays.asList(array));
+        ArrayList<Client> clients = new ArrayList<>();
+        dishes.forEach(d -> clients.addAll(d.getClientArrayList()));
+        clients.forEach(c->System.out.println("Client's name: "+ c.getClientName()+", "+"Client's location: "+c.getClientLocation()));
+
+    }
+    public static void getClientsWithoutDuplicates(Dish[] array){
+        Stream<Dish> dishes = Arrays.stream(array);
+        ArrayList<Client> clients = new ArrayList<>();
+        dishes.forEach(d -> clients.addAll(d.getClientArrayList()));
+
+        clients.stream()
+                .distinct()
+                .forEach(c ->System.out.println("Client's name: "+ c.getClientName()+", "+"Client's location: "+c.getClientLocation()));
+    }
 }

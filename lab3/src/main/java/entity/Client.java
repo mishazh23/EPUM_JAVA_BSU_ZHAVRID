@@ -9,6 +9,10 @@ public class Client {
     private String name;
     private ArrayList<Dish> lunch;
     private String location;
+    public Client (String name, String location){
+        this.name=name;
+        this.location=location;
+    }
     public void setClientName(String name) {
         this.name = name;
     }
@@ -18,10 +22,7 @@ public class Client {
     public void setLunch(ArrayList<Dish> lunch) {
         this.lunch = lunch;
     }
-    public Client (String name, String location){
-        this.name=name;
-        this.location=location;
-    }
+
     public ArrayList<Dish> getLunch() {
         return lunch;
     }
@@ -31,35 +32,18 @@ public class Client {
     public String getClientLocation(){
         return location;
     }
-    //заполнение списка
-    public ArrayList<Dish> addListDish(Dish[] lunch){
-        ArrayList<Dish> clientArrayList = new ArrayList<Dish>(Arrays.asList(lunch));
-        return clientArrayList;
-    }
-    //печать списка
-    public void printArrayList(List<Client> clientArrayList){
-        for(int i=0;i<clientArrayList.size();i++){
-            System.out.println(clientArrayList.get(i));
-        }
-    }
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), name, location);
-    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return Objects.equals(name, client.name) && Objects.equals(location, client.location);
+        return name.equals(client.name) &&
+                location.equals(client.location);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, location);
+    }
 }
