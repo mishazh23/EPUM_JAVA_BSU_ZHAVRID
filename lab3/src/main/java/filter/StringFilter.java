@@ -15,4 +15,14 @@ public class StringFilter {
                 return false;
         }
     }
+        public boolean filterString(String str)  {
+            String validStr = new String();
+            if (!str.isEmpty() && str.matches("^[a-zA-Z]+")) {
+                return true;
+            } else {
+                logger.error("Input info isn't correct! Try again: ");
+                return false;
+            }
+
+    }
 }

@@ -7,7 +7,6 @@ import filter.StringFilter;
 import reader.InfoReader;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -44,6 +43,7 @@ public class Main {
 
             System.out.println("\n"+"Getting the List of Clients without duplicates: ");
             getClientsWithoutDuplicates(array);
+            parallelTest(array);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -112,5 +112,24 @@ public class Main {
         clients.stream()
                 .distinct()
                 .forEach(c ->System.out.println("Client's name: "+ c.getClientName()+", "+"Client's location: "+c.getClientLocation()));
+    }
+    public static void parallelTest(Dish[] array){
+        long start = System.nanoTime();
+        ArrayList<Dish> dishes = new ArrayList<Dish>(Arrays.asList(array));
+        dishes.stream()
+                .parallel()
+                .filter(d->d.getClientArrayList().size()==1)
+                .peek(d -> System.out.println("Filtered dish: " + d.getDishName()));
+        long end = System.nanoTime();
+        float parallel = (float)(end - start);
+
+        long start2 = System.nanoTime();
+         dishes.stream()
+                .filter(d->d.getClientArrayList().size()==1)
+                .peek(d -> System.out.println("Filtered dish: " + d.getDishName()));
+        long end2 = System.nanoTime();
+        float notParallel = (float)(end2 - start2) ;
+
+        System.out.println("\nWith .parallel(): " + parallel + "\n" + "Without .parallel(): " + notParallel);
     }
 }
